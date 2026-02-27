@@ -1,0 +1,49 @@
+{
+  "Files": [
+    {
+      "Id": "/data/test/Coding/Frontend/bin/Debug/net8.0/wwwroot/_framework/blazor.webassembly.js",
+      "PackagePath": "staticwebassets/_framework/blazor.webassembly.js"
+    },
+    {
+      "Id": "/data/test/Coding/Frontend/obj/Debug/net8.0/compressed/kg8z7u9llm.gz",
+      "PackagePath": "staticwebassets/_framework/blazor.webassembly.js.gz"
+    },
+    {
+      "Id": "/data/test/Coding/Frontend/obj/Debug/net8.0/scopedcss/bundle/Frontend.styles.css",
+      "PackagePath": "staticwebassets/Frontend.styles.css"
+    },
+    {
+      "Id": "/data/test/Coding/Frontend/wwwroot/css/app.css",
+      "PackagePath": "staticwebassets/css/app.css"
+    },
+    {
+      "Id": "/data/test/Coding/Frontend/wwwroot/favicon.png",
+      "PackagePath": "staticwebassets/favicon.png"
+    },
+    {
+      "Id": "/data/test/Coding/Frontend/wwwroot/icon-192.png",
+      "PackagePath": "staticwebassets/icon-192.png"
+    },
+    {
+      "Id": "/data/test/Coding/Frontend/wwwroot/index.html",
+      "PackagePath": "staticwebassets/index.html"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.Frontend.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.build.Frontend.props",
+      "PackagePath": "build\\Frontend.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildMultiTargeting.Frontend.props",
+      "PackagePath": "buildMultiTargeting\\Frontend.props"
+    },
+    {
+      "Id": "obj/Debug/net8.0/staticwebassets/msbuild.buildTransitive.Frontend.props",
+      "PackagePath": "buildTransitive\\Frontend.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

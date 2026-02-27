@@ -1,0 +1,370 @@
+================================================================================
+  STOCK TRADING DATABASE — DOCUMENTATION
+  Version 1.0 | MySQL & SQLite3
+================================================================================
+
+
+--------------------------------------------------------------------------------
+  TABLE OF CONTENTS
+--------------------------------------------------------------------------------
+
+  1. Overview
+  2. Setup
+     2.1 MySQL Setup
+     2.2 SQLite3 Setup
+  3. Database Schema (ERD)
+  4. Data Definition Language (DDL)
+  5. Relationships
+  6. Query Reference
+  7. Notes
+
+
+--------------------------------------------------------------------------------
+  1. OVERVIEW
+--------------------------------------------------------------------------------
+
+  Database ini digunakan untuk sistem trading saham sederhana.
+  Terdiri dari 3 tabel utama:
+
+  - customers    : Data pelanggan/investor
+  - stocks       : Data saham yang tersedia
+  - transactions : Riwayat transaksi beli/jual saham
+
+
+--------------------------------------------------------------------------------
+  2. SETUP
+--------------------------------------------------------------------------------
+
+  2.1 MySQL Setup
+  ---------------
+
+  Install MySQL:
+
+    # Ubuntu/Debian
+    sudo apt install mysql-server
+    sudo systemctl start mysql
+
+    # MacOS
+    brew install mysql
+    brew services start mysql
+
+  Buat database baru:
+
+    mysql -u root -p
+    CREATE DATABASE stock_trading;
+    USE stock_trading;
+
+  Import schema:
+
+    mysql -u root -p stock_trading < schema.sql
+
+
+  2.2 SQLite3 Setup
+  -----------------
+
+  Install SQLite3:
+
+    # Ubuntu/Debian
+    sudo apt install sqlite3
+
+    # MacOS
+    brew install sqlite
+
+  Buat database baru:
+
+    sqlite3 stock_trading.db
+
+  Perhatian — perbedaan syntax SQLite3 vs MySQL:
+
+    MySQL                                   SQLite3
+    ----------------------------------------|----------------------------------------
+    INT PRIMARY KEY AUTO_INCREMENT          | INTEGER PRIMARY KEY AUTOINCREMENT
+    DECIMAL(15,2)                           | REAL atau NUMERIC(15,2)
+    TIMESTAMP DEFAULT CURRENT_TIMESTAMP     | TEXT DEFAULT (datetime('now'))
+    ON UPDATE CURRENT_TIMESTAMP             | Perlu trigger (tidak native)
+    VARCHAR(n)                              | TEXT (SQLite tidak enforce length)
+    CONSTRAINT fk_... FOREIGN KEY (...)     | FOREIGN KEY (...) — butuh PRAGMA
+    REFERENCES ...                          | PRAGMA foreign_keys = ON;
+
+  SQLite3 tidak enforce foreign keys secara default.
+  Jalankan ini setiap kali buka koneksi:
+
+    PRAGMA foreign_keys = ON;
+
+
+--------------------------------------------------------------------------------
+  3. DATABASE SCHEMA (ERD)
+--------------------------------------------------------------------------------
+
+  customers                transactions              stocks
+  +-----------------+      +---------------------+   +------------------+
+  | customer_id  PK |<-----| customer_id      FK |   | stock_id      PK |
+  | name            |      | stock_id         FK |-->| code             |
+  | email           |      | trx_id           PK |   | company_name     |
+  | address         |      | reference_id        |   | buy_price        |
+  | created_at      |      | status              |   | sell_price       |
+  +-----------------+      | price_buy_per_lot   |   | updated_at       |
+                           | quantity_lot        |   +------------------+
+                           | transaction_type    |
+                           | total               |
+                           | created_at          |
+                           +---------------------+
+ 
+  Relasi:
+    customers  (1) ---< (N) transactions   [customer_id]
+    stocks     (1) ---< (N) transactions   [stock_id]
+
+
+--------------------------------------------------------------------------------
+  4. DATA DEFINITION LANGUAGE (DDL)
+--------------------------------------------------------------------------------
+
+  -- MySQL Version --
+
+  CREATE TABLE customers (
+      customer_id INT           PRIMARY KEY AUTO_INCREMENT,
+      name        VARCHAR(100)  NOT NULL,
+      email       VARCHAR(100)  NOT NULL,
+      address     TEXT,
+      created_at  TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE stocks (
+      stock_id     INT          PRIMARY KEY AUTO_INCREMENT,
+      code         CHAR(6)      NOT NULL UNIQUE,
+      company_name VARCHAR(100) NOT NULL,
+      buy_price    DECIMAL(15,2) NOT NULL,
+      sell_price   DECIMAL(15,2) NOT NULL,
+      updated_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP
+                                ON UPDATE CURRENT_TIMESTAMP
+  );
+
+  CREATE TABLE transactions (
+      trx_id            INT           PRIMARY KEY AUTO_INCREMENT,
+      reference_id      VARCHAR(100)  NOT NULL,
+      status            VARCHAR(20)   NOT NULL DEFAULT 'pending',
+      customer_id       INT           NOT NULL,
+      stock_id          INT           NOT NULL,
+      price_buy_per_lot DECIMAL(15,2) NOT NULL,
+      quantity_lot      INT           NOT NULL,
+      transaction_type  VARCHAR(10)   NOT NULL,
+      total             DECIMAL(15,2) NOT NULL,
+      created_at        TIMESTAMP     DEFAULT CURRENT_TIMESTAMP,
+
+      CONSTRAINT fk_transactions_customer
+          FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+          ON DELETE RESTRICT ON UPDATE CASCADE,
+
+      CONSTRAINT fk_transactions_stock
+          FOREIGN KEY (stock_id) REFERENCES stocks(stock_id)
+          ON DELETE RESTRICT ON UPDATE CASCADE
+  );
+
+
+  -- SQLite3 Version --
+
+  PRAGMA foreign_keys = ON;
+
+  CREATE TABLE customers (
+      customer_id INTEGER      PRIMARY KEY AUTOINCREMENT,
+      name        TEXT         NOT NULL,
+      email       TEXT         NOT NULL,
+      address     TEXT,
+      created_at  TEXT         DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE stocks (
+      stock_id     INTEGER     PRIMARY KEY AUTOINCREMENT,
+      code         TEXT        NOT NULL UNIQUE,
+      company_name TEXT        NOT NULL,
+      buy_price    NUMERIC(15,2) NOT NULL,
+      sell_price   NUMERIC(15,2) NOT NULL,
+      updated_at   TEXT        DEFAULT (datetime('now'))
+  );
+
+  CREATE TABLE transactions (
+      trx_id            INTEGER       PRIMARY KEY AUTOINCREMENT,
+      reference_id      TEXT          NOT NULL,
+      status            TEXT          NOT NULL DEFAULT 'pending',
+      customer_id       INTEGER       NOT NULL,
+      stock_id          INTEGER       NOT NULL,
+      price_buy_per_lot NUMERIC(15,2) NOT NULL,
+      quantity_lot      INTEGER       NOT NULL,
+      transaction_type  TEXT          NOT NULL,
+      total             NUMERIC(15,2) NOT NULL,
+      created_at        TEXT          DEFAULT (datetime('now')),
+
+      FOREIGN KEY (customer_id) REFERENCES customers(customer_id)
+          ON DELETE RESTRICT ON UPDATE CASCADE,
+
+      FOREIGN KEY (stock_id) REFERENCES stocks(stock_id)
+          ON DELETE RESTRICT ON UPDATE CASCADE
+  );
+
+
+--------------------------------------------------------------------------------
+  5. RELATIONSHIPS
+--------------------------------------------------------------------------------
+
+  customers → transactions
+  ------------------------
+  Type    : One-to-Many (1:N)
+  FK      : transactions.customer_id → customers.customer_id
+  Behavior: ON DELETE RESTRICT  — customer tidak bisa dihapus jika ada transaksi
+            ON UPDATE CASCADE   — update customer_id otomatis propagate
+
+  stocks → transactions
+  ---------------------
+  Type    : One-to-Many (1:N)
+  FK      : transactions.stock_id → stocks.stock_id
+  Behavior: ON DELETE RESTRICT  — stock tidak bisa dihapus jika ada transaksi
+            ON UPDATE CASCADE   — update stock_id otomatis propagate
+
+  transaction_type values : 'buy' | 'sell'
+  status values           : 'pending' | 'success' | 'failed'
+
+
+--------------------------------------------------------------------------------
+  6. QUERY REFERENCE
+--------------------------------------------------------------------------------
+
+  6.1 Total Kekayaan Per Customer
+  --------------------------------
+
+  SELECT
+      c.customer_id,
+      c.name,
+      COALESCE(SUM(
+          CASE t.transaction_type
+              WHEN 'buy'  THEN  t.total
+              WHEN 'sell' THEN -t.total
+              ELSE 0
+          END
+      ), 0) AS total_kekayaan
+  FROM customers c
+  LEFT JOIN transactions t
+      ON c.customer_id = t.customer_id
+      AND t.status = 'success'
+  GROUP BY c.customer_id, c.name
+  ORDER BY total_kekayaan DESC;
+
+  Penjelasan:
+  - LEFT JOIN          : tetap tampilkan customer meski belum ada transaksi
+  - AND t.status       : filter di JOIN bukan WHERE agar customer tanpa
+                         transaksi tetap muncul dengan total = 0
+  - CASE               : buy = tambah (+), sell = kurang (-)
+  - COALESCE(..., 0)   : handle NULL jika customer belum ada transaksi
+
+
+  6.2 Total Lot Per Customer Per Saham
+  -------------------------------------
+
+  SELECT
+      c.customer_id,
+      c.name,
+      s.code,
+      s.company_name,
+      COALESCE(SUM(
+          CASE t.transaction_type
+              WHEN 'buy'  THEN  t.quantity_lot
+              WHEN 'sell' THEN -t.quantity_lot
+              ELSE 0
+          END
+      ), 0) AS total_lot,
+      COALESCE(SUM(
+          CASE t.transaction_type
+              WHEN 'buy'  THEN  t.total
+              WHEN 'sell' THEN -t.total
+              ELSE 0
+          END
+      ), 0) AS total_investasi
+  FROM customers c
+  LEFT JOIN transactions t
+      ON c.customer_id = t.customer_id
+      AND t.status = 'success'
+  LEFT JOIN stocks s
+      ON t.stock_id = s.stock_id
+  GROUP BY c.customer_id, c.name, s.stock_id, s.code, s.company_name
+  ORDER BY c.customer_id, total_investasi DESC;
+
+
+  6.3 Top 10 Customer Terkaya (MySQL)
+  -----------------------------------------
+
+  SELECT
+      ROW_NUMBER() OVER (ORDER BY total_kekayaan DESC) AS rank,
+      customer_id,
+      name,
+      total_kekayaan
+  FROM (
+      SELECT
+          c.customer_id,
+          c.name,
+          COALESCE(SUM(
+              CASE t.transaction_type
+                  WHEN 'buy'  THEN  t.total
+                  WHEN 'sell' THEN -t.total
+                  ELSE 0
+              END
+          ), 0) AS total_kekayaan
+      FROM customers c
+      LEFT JOIN transactions t
+          ON c.customer_id = t.customer_id
+          AND t.status = 'success'
+      GROUP BY c.customer_id, c.name
+  ) ranked
+  ORDER BY total_kekayaan DESC
+  LIMIT 10;
+
+
+  6.4 Riwayat Transaksi Per Customer
+  ------------------------------------
+
+  SELECT
+      t.trx_id,
+      t.reference_id,
+      t.transaction_type,
+      s.code,
+      s.company_name,
+      t.quantity_lot,
+      t.price_buy_per_lot,
+      t.total,
+      t.status,
+      t.created_at
+  FROM transactions t
+  JOIN customers c ON t.customer_id = c.customer_id
+  JOIN stocks s    ON t.stock_id = s.stock_id
+  WHERE c.customer_id = 1        -- ganti dengan customer_id yang diinginkan
+  ORDER BY t.created_at DESC;
+
+
+--------------------------------------------------------------------------------
+  7. NOTES
+--------------------------------------------------------------------------------
+
+  - total di tabel transactions sebaiknya dihitung saat insert:
+    total = price_buy_per_lot * quantity_lot
+
+  - status flow: pending → success | failed
+
+  - SQLite3 tidak support ON UPDATE CURRENT_TIMESTAMP untuk updated_at.
+    Gunakan trigger jika diperlukan:
+
+    CREATE TRIGGER update_stocks_timestamp
+    AFTER UPDATE ON stocks
+    FOR EACH ROW
+    BEGIN
+        UPDATE stocks SET updated_at = datetime('now')
+        WHERE stock_id = OLD.stock_id;
+    END;
+
+  - Untuk production, tambah index pada kolom yang sering di-query:
+
+    CREATE INDEX idx_transactions_customer ON transactions(customer_id);
+    CREATE INDEX idx_transactions_stock    ON transactions(stock_id);
+    CREATE INDEX idx_transactions_status   ON transactions(status);
+
+
+================================================================================
+  END OF DOCUMENTATION
+================================================================================

@@ -1,0 +1,206 @@
+.login-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.login-title {
+  color: white;
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin-bottom: 0.375rem;
+  letter-spacing: -0.03em;
+}
+
+.login-sub {
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 2rem;
+}
+
+.error-box {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #f87171;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1.1rem;
+}
+
+.form-group label {
+  color: #aaa;
+  font-size: 0.8rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 0.875rem;
+  width: 16px;
+  height: 16px;
+  color: #555;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+
+.form-input {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  color: white;
+  font-size: 0.9rem;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    background 0.2s;
+  font-family: inherit;
+}
+
+.form-input::placeholder {
+  color: #444;
+}
+
+.form-input:focus {
+  border-color: #1db954;
+  background: #1f1f1f;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 0.875rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #555;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.toggle-password:hover {
+  color: #aaa;
+}
+
+.toggle-password svg {
+  width: 16px;
+  height: 16px;
+}
+
+.form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.remember-me {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #888;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.remember-me input[type="checkbox"] {
+  accent-color: #1db954;
+  width: 14px;
+  height: 14px;
+}
+
+.forgot-link {
+  color: #1db954;
+  font-size: 0.85rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+.btn-register {
+  width: 100%;
+  padding: 0.8rem;
+  background: #1db954;
+  color: black;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.1s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: inherit;
+}
+
+.btn-register:hover:not(:disabled) {
+  background: #1ed760;
+  transform: translateY(-1px);
+}
+
+.btn-register:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.btn-register:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0, 0, 0, 0.3);
+  border-top-color: black;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  display: inline-block;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-link {
+  text-align: center;
+  color: #666;
+  font-size: 0.85rem;
+  margin-top: 1.5rem;
+}
+
+.login-link a {
+  color: #1db954;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}

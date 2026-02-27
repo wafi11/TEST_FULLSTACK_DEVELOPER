@@ -1,0 +1,81 @@
+-----------------------------------------------------
+Soal
+-----------------------------------------------------
+Input N = 5
+Hasil = 1
+1 2
+2 3 4
+3 4 5 6
+4 5 6 7 8
+
+Input N = 6
+Hasil = 1
+1 2
+2 3 4
+3 4 5 6
+4 5 6 7 8
+5 6 7 8 9 10
+
+-----------------------------------------------------
+Logic
+-----------------------------------------------------
+
+Baris 1: 1                    → mulai dari 1, 1 angka
+Baris 2: 1 2                  → mulai dari 1, 2 angka
+Baris 3: 2 3 4                → mulai dari 2, 3 angka
+Baris 4: 3 4 5 6              → mulai dari 3, 4 angka
+Baris 5: 4 5 6 7 8            → mulai dari 4, 5 angka
+
+------------------------------------------------------
+Pseuducode
+------------------------------------------------------
+
+START
+  INPUT N
+  FOR i = 1 TO N DO
+    start = IF i <= 1 THEN 1 ELSE i - 1
+    FOR j = 0 TO i - 1 DO
+      PRINT (start + j)
+      IF j < i - 1 THEN PRINT "  "
+    END FOR
+    PRINT newline
+  END FOR
+END
+
+------------------------------------------------------
+Implemntation To Code (C#)
+------------------------------------------------------
+
+using System;
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.Write("Input N = ");
+        int n = int.Parse(Console.ReadLine()!);
+
+        for (int i = 1; i <= n; i++)
+        {
+            int start = i <= 2 ? 1 : i - 1;
+
+            for (int j = 0; j < i; j++)
+            {
+                Console.Write(start + j);
+                if (j < i - 1)
+                    Console.Write(" ");
+            }
+
+            Console.WriteLine();
+        }
+    }
+}
+```
+
+**Output N = 5:**
+```
+1
+1 2
+2 3 4
+3 4 5 6
+4 5 6 7 8

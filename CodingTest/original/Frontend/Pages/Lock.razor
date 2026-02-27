@@ -1,0 +1,59 @@
+@page "/lock"
+@layout EmptyLayout
+@inject Frontend.Features.AuthService Auth
+@inject NavigationManager Nav
+
+<div class="lock-container">
+    <div class="lock-icon">🔒</div>
+    <h2>Account Locked</h2>
+    <p>Too many failed attempts.</p>
+
+    @if (lockCountdown > 0)
+    {
+        <div class="countdown">
+            Try again in <strong>@lockCountdown</strong> seconds
+        </div>
+    }
+    else
+    {
+        <div class="unlocked">
+            <p>You can try again now.</p>
+            <a href="/login" class="btn-back">Back to Login</a>
+        </div>
+    }
+</div>
+
+@code {
+    int lockCountdown = 0;
+    System.Threading.Timer? timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Baca dari localStorage
+        lockCountdown = await Auth.GetLockRemainingSeconds();
+
+        if (lockCountdown <= 0)
+        {
+            Nav.NavigateTo("/login");
+            return;
+        }
+
+        timer = new System.Threading.Timer(_ =>
+        {
+            lockCountdown--;
+            if (lockCountdown <= 0)
+            {
+                timer?.Dispose();
+                InvokeAsync(() =>
+                {
+                    Nav.NavigateTo("/login"); // ← otomatis balik ke login
+                    return Task.CompletedTask;
+                });
+                return;
+            }
+            InvokeAsync(StateHasChanged);
+        }, null, 1000, 1000);
+    }
+
+    public void Dispose() => timer?.Dispose();
+}

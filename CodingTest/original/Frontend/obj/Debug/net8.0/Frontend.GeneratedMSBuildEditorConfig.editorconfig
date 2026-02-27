@@ -1,0 +1,67 @@
+is_global = true
+build_property.EnableAotAnalyzer = 
+build_property.EnableSingleFileAnalyzer = 
+build_property.EnableTrimAnalyzer = false
+build_property.IncludeAllContentForSelfExtract = 
+build_property.TargetFramework = net8.0
+build_property.TargetPlatformMinVersion = 
+build_property.UsingMicrosoftNETSdkWeb = 
+build_property.ProjectTypeGuids = 
+build_property.InvariantGlobalization = false
+build_property.PlatformNeutralAssembly = 
+build_property.EnforceExtendedAnalyzerRules = 
+build_property._SupportedPlatformList = browser
+build_property.RootNamespace = Frontend
+build_property.RootNamespace = Frontend
+build_property.ProjectDir = /data/test/Coding/Frontend/
+build_property.EnableComHosting = 
+build_property.EnableGeneratedComInterfaceComImportInterop = false
+build_property.RazorLangVersion = 8.0
+build_property.SupportLocalizedComponentNames = 
+build_property.GenerateRazorMetadataSourceChecksumAttributes = 
+build_property.MSBuildProjectDirectory = /data/test/Coding/Frontend
+build_property._RazorSourceGeneratorDebug = 
+
+[/data/test/Coding/Frontend/App.razor]
+build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/data/test/Coding/Frontend/Layout/EmptyLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L0VtcHR5TGF5b3V0LnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[/data/test/Coding/Frontend/Pages/Error.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRXJyb3IucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/data/test/Coding/Frontend/_Imports.razor]
+build_metadata.AdditionalFiles.TargetPath = X0ltcG9ydHMucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/data/test/Coding/Frontend/Layout/AuthLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L0F1dGhMYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-kh1tjnkga0
+
+[/data/test/Coding/Frontend/Layout/MainLayout.razor]
+build_metadata.AdditionalFiles.TargetPath = TGF5b3V0L01haW5MYXlvdXQucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-hnp8cpx1fh
+
+[/data/test/Coding/Frontend/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-0kcgf0xbuv
+
+[/data/test/Coding/Frontend/Pages/Lock.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTG9jay5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-vhf7z6sun5
+
+[/data/test/Coding/Frontend/Pages/Login.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTG9naW4ucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-491808z60f
+
+[/data/test/Coding/Frontend/Pages/Register.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvUmVnaXN0ZXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = b-pwnon5v3i3
+
+[/data/test/Coding/Frontend/Pages/Welcome.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvV2VsY29tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-6t8ze9ojue

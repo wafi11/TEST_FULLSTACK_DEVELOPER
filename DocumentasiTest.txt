@@ -1,0 +1,257 @@
+================================================================================
+
+  TECHNICAL TEST SUBMISSION
+  Candidate  : WafiUddin
+  Date       : February 2026
+  Position   : Fullstack C# Developer
+
+================================================================================
+
+
+--------------------------------------------------------------------------------
+  OVERVIEW
+--------------------------------------------------------------------------------
+
+  Submission ini terdiri dari 3 bagian utama:
+
+    1. Coding Test     — Aplikasi autentikasi web berbasis Blazor WASM & ASP.NET Core
+    2. Logic Test      — Pseudocode dan implementasi pola angka
+    3. Technical Test  — Database schema, ERD, dan query SQL
+
+  Semua file telah dikemas dalam struktur folder berikut.
+
+
+--------------------------------------------------------------------------------
+  SUBMISSION STRUCTURE
+--------------------------------------------------------------------------------
+
+  Coding/
+  ├── CodingTest/              Folder jawaban Coding Test
+  │   ├── Backend.zip          Proyek ASP.NET Core Web API (.NET 8)
+  │   ├── Frontend.zip         Proyek Blazor WebAssembly (.NET 8)
+  │   ├── DocsCoding.pdf       Dokumentasi lengkap Coding Test
+  │   └── VideoTest.mp4        Video demo aplikasi berjalan
+  │
+  ├── Logic/                   Folder jawaban Logic Test
+  │   └── Pseudocode.txt       Pseudocode dan implementasi pola angka
+  │
+  └── Technical/               Folder jawaban Technical Test
+      ├── docs.txt             Dokumentasi setup & konfigurasi database
+      ├── erd.pdf              Diagram ERD (Entity Relationship Diagram)
+      └── query.sql            Query SQL total kekayaan per customer
+
+
+--------------------------------------------------------------------------------
+  1. CODING TEST
+--------------------------------------------------------------------------------
+
+  Deskripsi:
+    Membangun aplikasi web autentikasi dengan dua bagian terpisah — frontend
+    dan backend — yang berkomunikasi melalui REST API dengan JWT token.
+
+  Tech Stack:
+    Frontend  : Blazor WebAssembly (.NET 8)
+    Backend   : ASP.NET Core Web API (.NET 8)
+    Database  : SQLite dengan Entity Framework Core 8
+    Auth      : JWT Bearer Token (HMAC-SHA256)
+    Password  : BCrypt.Net hashing
+
+  Halaman yang diimplementasikan:
+    /           Landing page publik dengan market ticker
+    /login      Form login dengan account lockout protection
+    /register   Form registrasi dengan validasi input
+    /welcome    Dashboard post-login dengan session countdown
+    /lock       Lock screen dengan countdown timer
+
+  Fitur yang diimplementasikan:
+    [+] Register user baru dengan validasi (panjang, karakter, duplikat)
+    [+] Login dengan verifikasi BCrypt password
+    [+] JWT token generation dan validasi
+    [+] Account lockout setelah 3 kali gagal login (30 detik)
+    [+] Session countdown timer (30 menit)
+    [+] Lock countdown tersimpan di localStorage (persist saat refresh)
+    [+] Database transaction (User + Session dibuat secara atomik)
+    [+] Auto database migration saat startup
+    [+] Swagger UI untuk API testing
+    [+] Docker containerization (Frontend + Backend)
+    [+] CORS configuration
+
+  API Endpoints:
+    POST  /api/register   Registrasi user baru
+    POST  /api/login      Login dan return JWT token
+    POST  /api/logout     Clear session state
+    GET   /api/me         Get current user (protected, butuh JWT)
+
+  Cara menjalankan:
+
+    Tanpa Docker:
+      cd Backend && dotnet run        -> http://localhost:5278
+      cd Frontend && dotnet run       -> http://localhost:5053
+
+    Dengan Docker:
+      docker build -t backend:latest ./Backend
+      docker build -t frontend:latest ./Frontend
+      docker run -p 5278:8080 backend:latest
+      docker run -p 5053:80 frontend:latest
+
+  File dokumentasi lengkap : DocsCoding.pdf
+  File video demo          : VideoTest.mp4
+
+
+--------------------------------------------------------------------------------
+  2. LOGIC TEST
+--------------------------------------------------------------------------------
+
+  File: Logic/Pseudocode.txt
+
+  Deskripsi:
+    Implementasi pola angka dengan input N yang menghasilkan output
+    berbentuk segitiga dengan aturan angka awal dan jumlah angka
+    per baris mengikuti pola tertentu.
+
+  Contoh Output (N = 5):
+
+    1
+    1 2
+    2 3 4
+    3 4 5 6
+    4 5 6 7 8
+
+  Pola yang ditemukan:
+    - Baris ke-i mencetak sebanyak i angka
+    - Angka awal (start) per baris:
+        Baris 1 -> start = 1
+        Baris 2 -> start = 1
+        Baris 3 -> start = 2  (i - 1)
+        Baris 4 -> start = 3  (i - 1)
+        Baris 5 -> start = 4  (i - 1)
+    - Rumus: start = IF i <= 2 THEN 1 ELSE i - 1
+
+  Pseudocode:
+
+    START
+      INPUT N
+      FOR i = 1 TO N DO
+        IF i <= 2 THEN
+          start = 1
+        ELSE
+          start = i - 1
+        END IF
+        FOR j = 0 TO i - 1 DO
+          PRINT (start + j)
+          IF j < i - 1 THEN PRINT " "
+        END FOR
+        PRINT newline
+      END FOR
+    END
+
+  Implementasi C#:
+
+    using System;
+    class Program {
+        static void Main(string[] args) {
+            Console.Write("Input N = ");
+            int n = int.Parse(Console.ReadLine()!);
+            for (int i = 1; i <= n; i++) {
+                int start = i <= 2 ? 1 : i - 1;
+                for (int j = 0; j < i; j++) {
+                    Console.Write(start + j);
+                    if (j < i - 1) Console.Write(" ");
+                }
+                Console.WriteLine();
+            }
+        }
+    }
+
+
+--------------------------------------------------------------------------------
+  3. TECHNICAL TEST
+--------------------------------------------------------------------------------
+
+  File: Technical/docs.txt
+  File: Technical/erd.pdf
+  File: Technical/query.sql
+
+  Deskripsi:
+    Perancangan database untuk sistem trading saham sederhana dengan
+    3 entitas utama beserta relasi antar tabel dan query analitik.
+
+  Database: MySQL
+
+  Tabel yang dirancang:
+
+    customers
+    ---------
+    customer_id  INT           PK, AUTO_INCREMENT
+    name         VARCHAR(100)  NOT NULL
+    email        VARCHAR(100)  NOT NULL
+    address      TEXT
+    created_at   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
+
+    stocks
+    ------
+    stock_id     INT           PK, AUTO_INCREMENT
+    code         CHAR(6)       NOT NULL, UNIQUE
+    company_name VARCHAR(100)  NOT NULL
+    buy_price    DECIMAL(15,2) NOT NULL
+    sell_price   DECIMAL(15,2) NOT NULL
+    updated_at   TIMESTAMP     DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+
+    transactions
+    ------------
+    trx_id             INT           PK, AUTO_INCREMENT
+    reference_id       VARCHAR(100)  NOT NULL
+    status             VARCHAR(20)   DEFAULT 'pending'
+    customer_id        INT           FK -> customers.customer_id
+    stock_id           INT           FK -> stocks.stock_id
+    price_buy_per_lot  DECIMAL(15,2) NOT NULL
+    quantity_lot       INT           NOT NULL
+    transaction_type   VARCHAR(10)   NOT NULL  ('buy' | 'sell')
+    total              DECIMAL(15,2) NOT NULL
+    created_at         TIMESTAMP     DEFAULT CURRENT_TIMESTAMP
+
+  Relasi:
+    customers  (1) ---< (N)  transactions   [ONE customer, MANY transactions]
+    stocks     (1) ---< (N)  transactions   [ONE stock, MANY transactions]
+
+  Query — Total Kekayaan Per Customer:
+
+    SELECT
+        c.customer_id,
+        c.name,
+        COALESCE(SUM(
+            CASE t.transaction_type
+                WHEN 'buy'  THEN  t.total
+                WHEN 'sell' THEN -t.total
+                ELSE 0
+            END
+        ), 0) AS total_kekayaan
+    FROM customers c
+    LEFT JOIN transactions t
+        ON c.customer_id = t.customer_id
+        AND t.status = 'success'
+    GROUP BY c.customer_id, c.name
+    ORDER BY total_kekayaan DESC;
+
+  Logika query:
+    - LEFT JOIN     : tetap tampilkan customer meski belum ada transaksi
+    - AND status    : filter di JOIN agar customer tanpa transaksi = 0
+    - CASE          : buy menambah (+), sell mengurangi (-) kekayaan
+    - COALESCE      : jika NULL (belum ada transaksi) tampilkan 0
+    - ORDER BY DESC : customer terkaya di urutan teratas
+
+  Detail lengkap: Technical/docs.txt
+  ERD visual    : Technical/erd.pdf
+  File query    : Technical/query.sql
+
+
+--------------------------------------------------------------------------------
+  CONTACT
+--------------------------------------------------------------------------------
+
+  Apabila ada pertanyaan mengenai submission ini, silakan hubungi saya.
+
+  Terima kasih atas kesempatan yang diberikan.
+
+
+================================================================================
