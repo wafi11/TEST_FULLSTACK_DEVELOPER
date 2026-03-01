@@ -231,22 +231,35 @@
   6.1 Total Kekayaan Per Customer
   --------------------------------
 
-  SELECT
-      c.customer_id,
-      c.name,
-      COALESCE(SUM(
-          CASE t.transaction_type
-              WHEN 'buy'  THEN  t.total
-              WHEN 'sell' THEN -t.total
-              ELSE 0
-          END
-      ), 0) AS total_kekayaan
-  FROM customers c
-  LEFT JOIN transactions t
-      ON c.customer_id = t.customer_id
-      AND t.status = 'success'
-  GROUP BY c.customer_id, c.name
-  ORDER BY total_kekayaan DESC;
+ select 
+    ROW_NUMBER() OVER (ORDER BY c.name) as "No.",
+    c.name AS "Nama Customer",
+    CONCAT(
+        'Rp ',
+        to_char(
+            sum(
+                CASE 
+                    WHEN t.transaction_type = 'buy' THEN t.quantity_lot    
+                    ELSE  -t.quantity_lot 
+                END
+            ) * s.sell_price,
+            'FM999,999,999,990.00'
+        ),
+        ' -'
+    ) AS "Total Kekayaan"
+    from customers c 
+    join transactions t on c.customer_id = t.customer_id 
+    join stocks s on s.stock_id = t.stock_id
+    WHERE t.status = 'success'
+    GROUP BY c.customer_id,c.name,s.stock_id, s.sell_price
+    HAVING SUM(
+        CASE 
+            WHEN  t.transaction_type = 'buy' 
+            THEN  t.quantity_lot  
+            ELSE  -t.quantity_lot
+        END
+    ) > 0
+    ORDER BY c.name;
 
   Penjelasan:
   - LEFT JOIN          : tetap tampilkan customer meski belum ada transaksi
@@ -255,87 +268,6 @@
   - CASE               : buy = tambah (+), sell = kurang (-)
   - COALESCE(..., 0)   : handle NULL jika customer belum ada transaksi
 
-
-  6.2 Total Lot Per Customer Per Saham
-  -------------------------------------
-
-  SELECT
-      c.customer_id,
-      c.name,
-      s.code,
-      s.company_name,
-      COALESCE(SUM(
-          CASE t.transaction_type
-              WHEN 'buy'  THEN  t.quantity_lot
-              WHEN 'sell' THEN -t.quantity_lot
-              ELSE 0
-          END
-      ), 0) AS total_lot,
-      COALESCE(SUM(
-          CASE t.transaction_type
-              WHEN 'buy'  THEN  t.total
-              WHEN 'sell' THEN -t.total
-              ELSE 0
-          END
-      ), 0) AS total_investasi
-  FROM customers c
-  LEFT JOIN transactions t
-      ON c.customer_id = t.customer_id
-      AND t.status = 'success'
-  LEFT JOIN stocks s
-      ON t.stock_id = s.stock_id
-  GROUP BY c.customer_id, c.name, s.stock_id, s.code, s.company_name
-  ORDER BY c.customer_id, total_investasi DESC;
-
-
-  6.3 Top 10 Customer Terkaya (MySQL)
-  -----------------------------------------
-
-  SELECT
-      ROW_NUMBER() OVER (ORDER BY total_kekayaan DESC) AS rank,
-      customer_id,
-      name,
-      total_kekayaan
-  FROM (
-      SELECT
-          c.customer_id,
-          c.name,
-          COALESCE(SUM(
-              CASE t.transaction_type
-                  WHEN 'buy'  THEN  t.total
-                  WHEN 'sell' THEN -t.total
-                  ELSE 0
-              END
-          ), 0) AS total_kekayaan
-      FROM customers c
-      LEFT JOIN transactions t
-          ON c.customer_id = t.customer_id
-          AND t.status = 'success'
-      GROUP BY c.customer_id, c.name
-  ) ranked
-  ORDER BY total_kekayaan DESC
-  LIMIT 10;
-
-
-  6.4 Riwayat Transaksi Per Customer
-  ------------------------------------
-
-  SELECT
-      t.trx_id,
-      t.reference_id,
-      t.transaction_type,
-      s.code,
-      s.company_name,
-      t.quantity_lot,
-      t.price_buy_per_lot,
-      t.total,
-      t.status,
-      t.created_at
-  FROM transactions t
-  JOIN customers c ON t.customer_id = c.customer_id
-  JOIN stocks s    ON t.stock_id = s.stock_id
-  WHERE c.customer_id = 1        -- ganti dengan customer_id yang diinginkan
-  ORDER BY t.created_at DESC;
 
 
 --------------------------------------------------------------------------------
